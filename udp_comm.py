@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-# python 3
-
 """
 Class for handling Wifi operations - python 3.6
 ---------------------------------------
