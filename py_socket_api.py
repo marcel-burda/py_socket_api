@@ -60,24 +60,20 @@ class WifiComm:
             # receiving data
             try:
                 self.udp_sock.settimeout(3.0)  # code stuck at recvfrom() if nothing received, solution: timeout
-                raw_recv = self.udp_sock.recvfrom(2**16)  # arg for recvfrom should be greater than possible data length
+                raw_data, raw_address = self.udp_sock.recvfrom(2**32)  # should be greater than possible data length
             except socket.error as msg:
                 if str(msg) == 'timed out':
                     pass
                 else:
                     print("WARNING: __receive_thread -> " + str(msg))
             else:
-                raw_data = raw_recv[0]
-                raw_address = raw_recv[1]
                 # 'nice' print out
                 if self.printing:
-                    print(" DATA RECEIVED -> " + raw_data.hex() + " length: " + str(len(raw_data)) + "  from: " + str(raw_address))
-                # for loop stores the raw byte data into a buffer
-                ctr = 0
+                    print("DATA RECEIVED -> " + raw_data.hex() + " length: " + str(len(raw_data)) + "  from: " + str(raw_address))
                 try:
                     recv_data = struct.unpack(self.format_string * len(raw_data), raw_data)
                 except struct.error as msg:
-                    print("WARNING: __receive_thread -> " + str(msg))
+                    print("WARNING: __receive_thread -> " + str(msg) + "  (Data: " + raw_data.hex() + ")")
                 else:
                     self.mutex.acquire()  # enter critical section
                     self.buffer += [[recv_data]]
